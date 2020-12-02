@@ -12,6 +12,8 @@
 
 If you want to give this challenge a try before reading the writeup, I'm hosting it [here](https://alexcormier.github.io/ctf-writeups/hf_pro_2020/decipher_the_prophecy/). It's very slightly modified for a reason that may (or may not, I suppose) become clear when you read the writeup and spot the difference. All credit goes to MaxWhite for creating the challenge.
 
+**Note:** This is hosted on GitHub Pages... **do not attack GitHub**, it's not required.
+
 ## Context
 
 We're sent to a simple looking web page that points us towards 3 pieces of information that we will need to find.
