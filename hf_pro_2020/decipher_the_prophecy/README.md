@@ -8,6 +8,10 @@
 
 **Designer:** MaxWhite
 
+## Give it a try?
+
+If you want to give this challenge a try before reading the writeup, I'm hosting it [here](https://alexcormier.github.io/ctf-writeups/hf_pro_2020/decipher_the_prophecy/). It's very slightly modified for a reason that may (or may not, I suppose) become clear when you read the writeup and spot the difference. All credit goes to MaxWhite for creating the challenge.
+
 ## Context
 
 We're sent to a simple looking web page that points us towards 3 pieces of information that we will need to find.
@@ -70,7 +74,7 @@ The Gods' whisper isn't as obviously displayed as their message, so let's dive i
 </video>
 ```
 
-A live video, sounds like that might contain a whisper! Downloading a long enough sample of this never-ending video, for example with [youtube-dl](https://youtube-dl.org/), gives a repeating version of [this video](assets/bells.mp4).
+A live video, sounds like that might contain a whisper! Oh, and look at the id: `whisper`. Downloading a long enough sample of this never-ending video, for example with [youtube-dl](https://youtube-dl.org/), gives a repeating version of [this video](assets/bells.mp4).
 
 Turn down the volume a tad and open this up in your preferred video player, you'll hear nice sounds reminiscent of the early days of the Internet: a modem. Looks like we've reached the signal processing part of this challenge!
 
