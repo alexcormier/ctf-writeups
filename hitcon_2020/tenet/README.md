@@ -340,7 +340,7 @@ bool did_swallow_cookie()
 }
 ```
 
-So it looks like the cookie is what's the RW memory page and swallowing it means clearing it. Now what about vomitting it out? Let's see:
+So it looks like the cookie is what's in the RW memory page and swallowing it means clearing it. Now what about vomitting it out? Let's see:
 
 ```c
 bool did_vomit_cookie()
@@ -350,7 +350,7 @@ bool did_vomit_cookie()
 }
 ```
 
-Okay, so the first 8 bytes of the same memory page are compared against a value in static memory, so I suppose that means the cookie is really just the first 8 bytes. Presumably, this means that the forward pass will need to read those 8 bytes and clear them in main looped we analyzed earlier, then restore it in `FUN_00100cc8`.
+Okay, so the first 8 bytes of the same memory page are compared against a value in static memory, so I suppose that means the cookie is really just the first 8 bytes. Presumably, this means that our shellcode will need to read those 8 bytes and clear them in the main loop we analyzed earlier, then restore it in `FUN_00100cc8`.
 
 ### Initialization process
 
@@ -481,7 +481,7 @@ bool should_exit() {
 }
 ```
 
-So our exit condition is an exit syscall, that makes sense! But this function, which is called at each step of the execution of our shellcode, also makes sure we're not trying to mess with the `cs` and `ss` registers.
+So our exit condition is an exit syscall, that makes sense! But this function, which is called at each step of the execution of our shellcode, also skips all other syscall instructions and makes sure we're not trying to mess with the `cs` and `ss` registers.
 
 ### Travelling in time
 
@@ -557,7 +557,7 @@ The most basic implementation of this idea would be to have a sort of jump table
 
 start:
     mov rdi, [0x2170000]
-    lea rdi, [table + rdi * (entry_size)]
+    lea rdi, [table + rdi * ENTRY_SIZE]
     jmp rdi
 continue:
     mov rax, 60
@@ -579,9 +579,9 @@ table:
     jmp continue
 ```
 
-Now, of course this is actually impossible to implement: we would need 2<sup>64</sup> entries in the table. So maybe we could do it one byte at a time? That would require 256 entries, which would each need to be at most 7 bytes long to respect the limit of 2000 bytes. Add to that that we wouldn't be able to use short jumps for all entries and might have to deal with padding to make sure all entries are the same size... we would be cutting it close. So then one nibble at a time? With only 16 entries required, size constraints definitely wouldn't be a problem. Sounds like a good plan!
+Now, of course this is actually impossible to implement: we would need 2<sup>64</sup> entries in the table. So maybe we could do it one byte at a time? That would require 256 entries, which would each need to be at most 7 bytes long to respect the limit of 2000 bytes. Add to that that we wouldn't be able to use short jumps for all entries and might have to deal with padding to make sure all entries are the same size... we would be cutting it close. So then one nibble at a time? With only 16 entries required, size constraints definitely wouldn't be a problem. That sounds like a good plan!
 
-Working with nibbles brings an additional consideration, however. Using `mov` instructions like we showed above only works on whole bytes, so we have to be careful not to overwrite the cookie as we're traversing it. The solution for this is simple though: use the `or` instruction. On the forward pass, that will leave the cookie unchanged because we'll be `or`'ing it with itself. And on the backward pass, it will restore the cookie as required since we'll be `or`'ing zeros with the cookie.
+Working with nibbles brings an additional consideration, however. Using `mov` instructions like we showed above only works on whole bytes, so we have to be careful not to overwrite the cookie as we're traversing it. The solution for this is simple though: use the `or` instruction. On the forward pass, that will leave the cookie unchanged because we'll be `or`'ing it with itself and some zeros. And on the backward pass, it will restore the cookie as required since we'll be `or`'ing zeros with nibbles of the cookie.
 
 Also, to keep the logic a bit simpler and since we have more than enough space to work with, we can implement two distinct jumping tables: one for the high nibbles and one for the low nibbles.
 
