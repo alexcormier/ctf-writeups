@@ -1,4 +1,4 @@
-# Decipher the Prophecy
+# Tenet
 
 **CTF:** [HITCON CTF 2020](https://ctf2020.hitcon.org/)
 
